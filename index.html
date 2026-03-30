@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmic Quest - Game</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Starting Screen -->
+    <div id="startScreen" class="screen active">
+        <div class="stars"></div>
+        <div class="container">
+            <div class="game-title">
+                <h1>COSMIC QUEST</h1>
+                <p class="subtitle">Explore the Universe</p>
+            </div>
+            
+            <div class="start-buttons">
+                <button class="btn btn-primary" onclick="startGame()">START GAME</button>
+                <button class="btn btn-secondary" onclick="showControls()">HOW TO PLAY</button>
+                <button class="btn btn-secondary" onclick="showSettings()">SETTINGS</button>
+            </div>
+            
+            <div class="credits">
+                <p>© 2026 Cosmic Quest Studios</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="gameScreen" class="screen">
+        <div class="game-header">
+            <div class="stats">
+                <div class="score">Score: <span id="score">0</span></div>
+                <div class="lives">Lives: <span id="lives">3</span></div>
+            </div>
+            <h2>COSMIC QUEST</h2>
+            <div class="stats">
+                <div class="wave">Wave: <span id="wave">1</span></div>
+                <button class="btn-menu" onclick="backToStart()">← MENU</button>
+            </div>
+        </div>
+        
+        <div class="game-area">
+            <div style="position: absolute; top: 15px; left: 50%; transform: translateX(-50%); background: rgba(255, 100, 255, 0.3); padding: 8px 15px; border-radius: 5px; border: 1px solid #ff64ff; font-size: 13px; z-index: 5; font-weight: bold; text-align: center; white-space: nowrap;">
+                Press <span style="background: rgba(255, 255, 255, 0.2); padding: 3px 8px; border-radius: 3px; font-family: monospace;" id="dashKeyDisplay">SPACE</span> to Dash <span style="color: #ffff00;" id="dashCooldownDisplay"></span>
+            </div>
+            <!-- Normal Mode Canvas -->
+            <div id="gameCanvas" class="canvas" style="display: flex;">
+                <div class="player" id="player"></div>
+                <div id="enemies-container"></div>
+                <div id="bullets-container"></div>
+            </div>
+            <!-- Mirror Mode Canvas -->
+            <div id="gameMirrorContainer" style="display: none; display: flex; gap: 10px; width: 100%; height: 100%; justify-content: center; align-items: center;">
+                <!-- Left side: Player only -->
+                <div id="gameMirrorLeft" class="canvas" style="flex: 1; position: relative;">
+                    <div style="position: absolute; top: 5px; left: 5px; font-size: 12px; color: #ffff00; font-weight: bold;">Player View</div>
+                    <div class="player" id="player-mirror-left"></div>
+                    <div id="bullets-container-mirror-left"></div>
+                </div>
+                <!-- Right side: Enemies only -->
+                <div id="gameMirrorRight" class="canvas" style="flex: 1; position: relative;">
+                    <div style="position: absolute; top: 5px; left: 5px; font-size: 12px; color: #ffff00; font-weight: bold;">Enemy View</div>
+                    <div id="enemies-container-mirror"></div>
+                    <div id="bullets-container-mirror-right"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="game-footer">
+            <p id="gameInfo">Use ARROW KEYS or WASD to move | Dodge the incoming bullets!</p>
+        </div>
+    </div>
+
+    <!-- Controls Screen -->
+    <div id="controlsScreen" class="screen">
+        <div class="modal-content">
+            <h2>HOW TO PLAY</h2>
+            <div class="controls-info">
+                <div class="control-item">
+                    <strong>Movement:</strong> Arrow Keys or WASD
+                </div>
+                <div class="control-item">
+                    <strong>Goal:</strong> Dodge enemy bullets and survive as long as possible
+                </div>
+                <div class="control-item">
+                    <strong>Enemies:</strong> More enemies spawn as you survive longer
+                </div>
+                <div class="control-item">
+                    <strong>Three Lives:</strong> Lose all lives and it's game over
+                </div>
+                <div class="control-item">
+                    <strong>Difficulty:</strong> Enemy fire rate increases with difficulty level
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="backToStart()">BACK TO MENU</button>
+        </div>
+    </div>
+
+    <!-- Settings Screen -->
+    <div id="settingsScreen" class="screen">
+        <div class="modal-content">
+            <h2>SETTINGS</h2>
+            <div class="settings-group">
+                <label>
+                    <input type="checkbox" id="soundToggle" checked> Sound Effects
+                </label>
+                <label>
+                    <input type="checkbox" id="musicToggle" checked> Background Music
+                </label>
+                <label>
+                    Difficulty:
+                    <select id="difficulty">
+                        <option value="easy">Easy</option>
+                        <option value="normal" selected>Normal</option>
+                        <option value="hard">Hard</option>
+                    </select>
+                </label>
+                <label>
+                    Dash Key:
+                    <input type="text" id="dashKeybind" maxlength="1" value=" " placeholder="Press space or any key" style="width: 80px; padding: 5px;">
+                </label>
+                <label>
+                    Game Mode:
+                    <select id="gameMode">
+                        <option value="normal">Normal</option>
+                        <option value="mirror">Mirror (Split Screen)</option>
+                    </select>
+                </label>
+            </div>
+            <button class="btn btn-primary" onclick="backToStart()">BACK TO MENU</button>
+        </div>
+    </div>
+
+    <!-- Death Screen -->
+    <div id="deathScreen" class="screen">
+        <div class="modal-content death-content">
+            <h2>GAME OVER</h2>
+            <div class="death-stats">
+                <div class="stat">
+                    <span class="stat-label">Final Score:</span>
+                    <span class="stat-value" id="finalScore">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">High Score:</span>
+                    <span class="stat-value high-score" id="highScore">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Wave Reached:</span>
+                    <span class="stat-value" id="finalWave">1</span>
+                </div>
+            </div>
+            <div class="death-buttons">
+                <button class="btn btn-primary" onclick="startGame()">RESTART</button>
+                <button class="btn btn-secondary" onclick="backToStart()">RETURN TO MENU</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
